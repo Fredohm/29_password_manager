@@ -1,8 +1,26 @@
 from tkinter import *
+from tkinter import messagebox
 # PASSWORD MANAGER
 
 
 # SAVE PASSWORD
+def save():
+    website = website_input.get()
+    username = username_entry.get()
+    password = password_entry.get()
+
+    if len(website) == 0 or len(username) == 0 or len(password) == 0:
+        messagebox.showinfo(title="Oops", message="Please don't leave any fields empty!")
+    else:
+        is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered: \n"
+                                                              f"Email: {username}\n"
+                                                              f"Password: {password}\n"
+                                                              f"Is it ok to save?")
+        if is_ok:
+            with open("./password_list.txt", mode="a") as data_file:
+                data_file.write(f"{website} | {username} | {password}\n")
+                website_input.delete(0, END)
+                password_entry.delete(0, END)
 
 
 # UI SETUP
@@ -28,9 +46,11 @@ password_label.grid(row=3, column=0, pady=5)
 # Entries
 website_input = Entry(width=55)
 website_input.grid(row=1, column=1, columnspan=2)
+website_input.focus()
 
 username_entry = Entry(width=55)
 username_entry.grid(row=2, column=1, columnspan=2)
+username_entry.insert(0, "fredohm@hotmail.bu")
 
 password_entry = Entry(width=36)
 password_entry.grid(row=3, column=1)
@@ -39,7 +59,7 @@ password_entry.grid(row=3, column=1)
 password_button = Button(text="Generate Password")
 password_button.grid(row=3, column=2)
 
-add_button = Button(text="Add", width=46, pady=2)
+add_button = Button(text="Add", width=46, pady=2, command=save)
 add_button.grid(row=4, column=1, columnspan=2)
 
 
