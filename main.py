@@ -1,6 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 from random import randint, choice, shuffle
+
+import json
 import pyperclip
 
 
@@ -29,19 +31,34 @@ def generate_password():
 # SAVE PASSWORD
 def save():
     website = website_input.get()
-    username = username_entry.get()
+    email = username_entry.get()
     password = password_entry.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": password
+        }
+    }
 
-    if len(website) == 0 or len(username) == 0 or len(password) == 0:
+    if len(website) == 0 or len(email) == 0 or len(password) == 0:
         messagebox.showinfo(title="Oops", message="Please don't leave any fields empty!")
     else:
         is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered: \n"
-                                                              f"Email: {username}\n"
+                                                              f"Email: {email}\n"
                                                               f"Password: {password}\n"
                                                               f"Is it ok to save?")
         if is_ok:
-            with open("./password_list.txt", mode="a") as data_file:
-                data_file.write(f"{website} | {username} | {password}\n")
+            try:
+                with open("./data.json", mode="r") as data_file:
+                    data = json.load(data_file)
+            except FileNotFoundError:
+                with open("data.json", mode="w") as data_file:
+                    json.dump(new_data, data_file, indent=4)
+            else:
+                data.update(new_data)
+                with open("data.json", mode="w") as data_file:
+                    json.dump(data, data_file, indent=4)
+            finally:
                 website_input.delete(0, END)
                 password_entry.delete(0, END)
 
@@ -67,8 +84,8 @@ password_label = Label(text="Password:")
 password_label.grid(row=3, column=0, pady=5)
 
 # Entries
-website_input = Entry(width=55)
-website_input.grid(row=1, column=1, columnspan=2)
+website_input = Entry(width=36)
+website_input.grid(row=1, column=1)
 website_input.focus()
 
 username_entry = Entry(width=55)
@@ -79,6 +96,9 @@ password_entry = Entry(width=36)
 password_entry.grid(row=3, column=1)
 
 # Buttons
+search_button = Button(text="Search", command="search", width=14)
+search_button.grid(row=1, column=2)
+
 generate_password_button = Button(text="Generate Password", command=generate_password)
 generate_password_button.grid(row=3, column=2)
 
