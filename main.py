@@ -14,9 +14,9 @@ def generate_password():
     numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
     symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
 
-    password_letters = [choice(letters) for _ in range(randint(8, 10))]
-    password_numbers = [choice(numbers) for _ in range(randint(2, 4))]
-    password_symbols = [choice(symbols) for _ in range(randint(2, 4))]
+    password_letters = [choice(letters) for _ in range(randint(14, 18))]
+    password_numbers = [choice(numbers) for _ in range(randint(4, 8))]
+    password_symbols = [choice(symbols) for _ in range(randint(4, 8))]
 
     password_list = password_letters + password_numbers + password_symbols
     shuffle(password_list)
@@ -63,6 +63,25 @@ def save():
                 password_entry.delete(0, END)
 
 
+# SEARCH FUNCTION
+def find_password():
+    website = website_input.get()
+
+    try:
+        with open("./data.json", mode="r") as data_file:
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Data File Found")
+    else:
+        if f"{website}" in data:
+            email = data[website]["email"]
+            password = data[website]["password"]
+            pyperclip.copy(password)
+            messagebox.showinfo(title="Website", message=f"Website: {email}\nPassword: {password}")
+        else:
+            messagebox.showinfo(title="Error", message=f"No details for {website} exists.")
+
+
 # UI SETUP
 window = Tk()
 window.title("Password Manager")
@@ -96,7 +115,7 @@ password_entry = Entry(width=36)
 password_entry.grid(row=3, column=1)
 
 # Buttons
-search_button = Button(text="Search", command="search", width=14)
+search_button = Button(text="Search", width=14, command=find_password)
 search_button.grid(row=1, column=2)
 
 generate_password_button = Button(text="Generate Password", command=generate_password)
